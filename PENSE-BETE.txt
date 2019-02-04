@@ -1,0 +1,259 @@
+﻿##########################################################################################
+MODBUS RTU PYTHON LINUX :
+Définir le port USB de communication de l'interface FTDI232RL (dmesg -s 1024)
+Code python :
+from pymodbus.client.sync import ModbusSerialClient
+con=ModbusSerialClient(method='rtu',port='/dev/ttyUSB0',stopbits=2,bytesize=8,baudrate=9600,parity='N')
+con.connect()
+values=con.read_holding_registers(0x00,1,unit=2) #(a,b,c) : a=numéro registre, b=longueur, c=numéro esclave
+con.close()
+print(values.registers) #sous la forme d'une liste
+##########################################################################################
+EWON FLEXY 205 :
+
+Code pour FTP
+&[$dtHL$ftT$st_m30$et_s0$fnTEST.txt$tnTime_int]
+
+$dtHL : HL pour Historical logging
+$ftT : format Text
+$st_m30 : défini le temps de début comme 30min avant maintenant
+$et_s0 : définit le temps de fin comme étant maintenant (s : seconde, m = minutes, d= jours)
+$fnTEST.txt : nom du fichier qui doit etre pareil que le fichier
+$tnTime_int : nom de la variable
+$flA : choix des tags du topic A
+##########################################################################################
+Raspbian base :
+sudo apt upgrade
+sudo apt update
+sudo apt dist-upgrade
+##########################################################################################
+WIFI sur Raspbian :
+Editer le fichier qui va  bien : sudo nano /etc/wpa_supplicant/wpa_supplicant.conf
+Ajouter à la fin :
+network={
+    ssid="nomDeLaBox"
+    psk="cléDeSécurité"
+    key_mgmt=WPA-PSK
+}
+A savoir : clé de type WEP plutôt que du WPA/WPA2, insérez la valeur NONE dans key_mgmt
+lancement wifi : ifconfig wlan0
+Un reboot est peut être nécessaire
+##########################################################################################
+IP FIXE :
+ifconfig #permet de définir quelle interface
+sudo nano /etc/dhcpcd.conf #rentre dans le fichier des paramètres dhcp
+#ajouter ces lignes à la fin. 30/24 défini le masque de sous réseau, on peu s'en passer
+interface wlan0
+static ip_address = 192.168.0.30/24
+static routers = 192.168.0.1
+static domain_name_servers = 192.168.0.1
+#Faire un
+reboot
+##########################################################################################
+Client FTP : natif sous linux :
+ftp 10.25.25.25
+#ou
+ftp ftp.tata.ovh.net
+Ensuite ca demande le user et le mdp puis on entre dans un mode ftp (ls, ...)
+Pour sortie : exit
+##########################################################################################
+#Firewall sous raspbian :
+sudo ufw status #vérifier le status
+sudo ufw enable
+sudo ufw disable
+sudo ufw status verbose #voir les règles
+##########################################################################################
+Browser raspbian : lynx
+##########################################################################################
+Supprimer python ancien : sudo apt-get remove python
+##########################################################################################
+Wifi networks are not showing in Ubuntu 16.04
+sudo service network-manager restart
+##########################################################################################
+Adresse IP par Python :
+import socket
+socket.gethostbyname(socket.gethostname())
+##########################################################################################
+Tutoriel sur l'utilisation de netstat pour afficher les ports ouverts
+http://www.octetmalin.net/windows/tutoriels/netstat.php
+https://fr.wikipedia.org/wiki/Liste_de_ports_logiciels
+##########################################################################################
+Raspbian changement de mdp : passwd
+##########################################################################################
+SSH : pour accèder via SSH : faire sudo raspi-config et activer le SSH dans les options.
+Ensuite, se connecter via un hyperterminal type Putty ou avec Cmder : ssh 192.168.x.x -l pi (-l pi est pour définir sous quel login se co)
+##########################################################################################
+Mettre à jour le path des variables d'environnement par ligne de commande
+set PATH=%PATH%;C:\nouveau\chemin\;
+##########################################################################################
+USB on raspbian
+ls -l /dev/disk/by-uuid/
+sudo mkdir /media/usb
+sudo mount /dev/sda1 /media/usb -o uid=pi,gid=pi
+##########################################################################################
+Navigateur par Raspbian shell : lynx
+##########################################################################################
+Affiche tous les GPIO
+gpio readall
+##########################################################################################
+http://www.lattepanda.com/
+##########################################################################################
+Install Python36 on Raspbian
+$ sudo apt-get update
+$ sudo apt-get install build-essential tk-dev libncurses5-dev libncursesw5-dev libreadline6-dev libdb5.3-dev libgdbm-dev libsqlite3-dev libssl-dev libbz2-dev libexpat1-dev liblzma-dev zlib1g-dev
+$ wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz
+$ tar xf Python-3.6.0.tar.xz
+$ cd Python-3.6.0
+$ ./configure
+$ make (attention très long, olbigation ??)
+$ sudo make altinstall
+$ sudo rm -r Python-3.6.0
+$ rm Python-3.6.0.tgz
+##########################################################################################
+Changement langue clavier, aller dans :
+sudo raspi-config
+##########################################################################################
+A essayer, pour faire des framework web très rapidement
+http://bottlepy.org/docs/dev/
+##########################################################################################
+Librairie pour modbus série :
+http://libmodbus.org/documentation/
+##########################################################################################
+Explications compilation code C
+https://openclassrooms.com/courses/compilez-sous-gnu-linux
+##########################################################################################
+RASPBIAN :
+Une installation debian (avec ou sans interface graphique) mets à disposition 6 consoles en mode texte (non graphique) qui peuvent être accessibles depuis l'interface graphique avec les raccourcis clavier Ctrl+Alt suivi de F1,F2,F3,F4,F5 ou F6.
+Essayez ! Tapez Ctrl+Alt+F2, l'interface graphique de votre environnement de Bureau vient de disparaître et votre écran n'est plus en mode graphique… Pas d'affolement : L'interface graphique est toujours fonctionnelle, et vous pourrez y retourner en tapant Alt+F7, car la 7ème console est celle (par défaut) qui est utilisée pour le gestionnaire de connexion graphique.
+Depuis une des 6 consoles en mode texte, les raccourcis Alt+F1, Alt-F2 etc… vous permettront de passer de l'une à l'autre de ces console en mode texte et Alt+F7 vous permettra de retrouver votre environnement de bureau en mode graphique.
+
+https://wiki.debian-fr.xyz/Trucs_et_astuces_pour_la_console
+##########################################################################################
+Calcul du CRC16 pour la trame modbus complète :
+https://www.lammertbies.nl/comm/info/crc-calculation.html
+Attention poids fort/faible
+##########################################################################################
+Résolution écran démarrage et VNC
+http://blog.tibimac.com/2015/01/configuration-depart-raspberry-pi/
+##########################################################################################
+MEMOIRE : df -Th
+##########################################################################################
+ommandes générales
+apt-get update : Met à jour votre version de Raspbian.
+apt-get upgrade : Met à niveau tous les logiciels que vous avez installés.
+clear : Efface l’écran du terminal des commandes et du texte précédemment exécutés.
+date : Affiche la date actuelle.
+find / -name exemple.txt : Rrecherche dans le système entier le fichier exemple.txt et génère une liste de tous les répertoires qui contiennent le fichier.
+nano example.txt : Ouvre le fichier example.txt dans “Nano”, l’éditeur de texte de linux.
+poweroff : Arrêt immédiat du raspberry PI.
+raspi-config : Ouvre le menu des paramètres de configuration.
+reboot : Pour rebooter immédiatement le Raspberry PI.
+shutdown -h now : Pour éteindre immédiatement le Raspberry PI.
+shutdown -h 01:22 : Pour éteindre le Raspberry PI à 1:22 AM.
+startx : Ouvrir l’interface graphique GUI (Graphical User Interface).
+Commandes sur les fichiers et répertoires
+cat exemple.txt : Affiche le contenu du fichier exemple.txt.
+cd /abc/xyz : Change de répertoire courant pour le répertoire /abc/xyz.
+cp XXX : Copie le fichier ou le répertoire XXX et le colle à un emplacement spécifique. Par exemple: cp exemplefile.txt /home/pi/office/ copie exemplefile.txt du répertoire courant et le colle dans le répertoire /home/pi/ directory. Si le fichier n’est pas présent dans le répertoire courant, vous pouvez ajouter son chemin en préfixe (par exemple : cp /home/pi/documents/examplefile.txt /home/pi/office/ copie le fichier du répertoire documents dans le répertoire office).
+ls -l : Liste tous les fichiers du répertoire en cours, ainsi que la taille du fichier, la date de modification et les autorisations.
+mkdir exemple_directory : Créer dans le répertoire courant un nouveau répertoire exemple_directory.
+mv XXX : Déplace un fichier ou un répertoire nomé XXX à un emplacement spécifique.Par exemple, mv exemplefile.txt /home/pi/office/ déplace exemplefile.txt dans le répertoire /home/pi/office. Si le fichier n’est pas présent dans le répertoire courant, vous pouvez ajouter son chemin en préfixe (par exemple :. cp /home/pi/documents/exemplefile.txt /home/pi/office/ déplace le fichier du répertoire documents dans le répertoire office). Cette commande peut aussi être utilisé pour renommer des fichier (mais seulement dans le même répertoire). par exemple, mv examplefile.txt newfile.txt renomme examplefile.txt en newfile.txt, et conserve le fichier dans le même répertoire.
+rm example.txt : Effacer le fichier example.txt.
+rmdir example_directory : Effacer le répertoire example_directory (seulement si il est vide).
+scp user@10.0.0.32 :/some/path/file.txt : Copier un fichier à travers SSH. Peut être utilisé pour télécharger un fichier à partir d’un ordinateur de bureau / ordinateur portable sur le Raspberry Pi. user@10.0.0.32 est le nom d’ utilisateur et l’adresse IP locale du bureau / ordinateur portable et /some/path/file.txt est le chemin d’accès et le nom du fichier sur le bureau / ordinateur portable.
+touch :Crée un nouveau fichier vide dans le répertoire courant.
+Commandes Réseau et Internet
+ifconfig :Pour vérifier l’état de la connexion réseau que vous utilisez (pour voir si wlan0 dispose d’ une adresse IP par exemple).
+iwconfig : Pour vérifier quel réseau l’adaptateur sans fil utilise par exemple.
+iwlist wlan0 scan : Affiche une liste des réseaux sans fil actuellement disponibles sur wlan0.
+iwlist wlan0 scan | grep ESSID : Utilisez grep avec le nom d’un champ pour répertorier uniquement les champs dont vous avez besoin (par exemple, pour lister les ESSID uniquement).
+nmap : Analyse votre réseau et répertorie les périphériques connectés, le numéro de port, le protocole, le système d’exploitation, l’état (ouvert ou fermé), les adresses MAC et d’autres informations.
+ping : Teste la connectivité entre deux périphériques connectés sur un réseau. Par exemple, ping 10.0.0.32 envoie un paquet à l’appareil à IP 10.0.0.32 et attend une réponse. Il fonctionne également avec les adresses de sites Web.
+wget http://www.website.com/example.txt : Télécharge le fichier example.txt depuis le Web et l’enregistre dans le répertoire courant.
+Commandes d’informations systèmes
+cat /proc/meminfo : Affiche des détails sur votre mémoire.
+cat /proc/partitions :Affiche la taille et le nombre de partitions sur votre carte SD ou votre disque dur.
+cat /proc/version : Affiche la version de la Rasperry Pi que vous utilisez.
+df -h : Affiche des informations sur l’espace disque disponible.
+df / :Indique la quantité d’espace disque disponible.
+dpkg –get-selections | grep XXX : Affiche tous les packages installés qui sont liés à XXX.
+dpkg –get-selections : Affiche tous les paquets installés.
+free : Indique la quantité de mémoire libre disponible.
+hostname -I : Affiche l’adresse IP de votre Raspberry Pi.
+lsusb : Liste tous les périphériques USB connectés à votre Raspberry Pi.
+Touche HAUT : En appuyant sur la touche HAUT, vous entrez la dernière commande entrée dans l’invite de commande. C’est un moyen rapide de corriger les commandes qui ont été faites par erreur.
+vcgencmd measure_temp :Affiche la température de la CPU.
+vcgencmd get_mem arm && vcgencmd get_mem gpu : Affiche la mémoire divisée entre le processeur et le GPU.
+##########################################################################################
+Définir la taille de l'affichage d'une console : (voir framebuffer_width et hieght)
+https://elinux.org/RPiconfig
+
+Utilisation du Sound Sensor avec Raspberry :
+http://www.instructables.com/id/Using-a-sound-sensor-with-a-Raspberry-Pi-to-contro/
+
+Calibration des écran tactile (inversement X / Y, ...) :
+https://doc.ubuntu-fr.org/evdev
+
+Tuto pour l'écran LCD multilignes :
+http://electroniqueamateur.blogspot.fr/2014/05/afficheur-lcd-16-x-2-et-raspberry-pi.html
+
+Doc du lidar :
+http://gilisymo.com/img/cms/LS53L0X_datasheet_Gilisymo_rev1_0.pdf
+
+Librairie python pour 5110 avec examples :
+https://github.com/adafruit/Adafruit_Nokia_LCD
+Explication des méthodes ImageDraw avec PIL : http://pillow.readthedocs.io/en/3.1.x/reference/ImageDraw.html
+
+Copier coller sous ubuntu :
+sudo cp /chemin/de/ton/fichier espace /chemin/de/destination
+
+Supprimer un dossier sous ubuntu : rm -r
+Plus d'explication sur les commandes ubuntu : https://doc.ubuntu-fr.org/tutoriel/console_ligne_de_commande
+
+Utilisation des LEDs adressables :
+http://frederickvandenbosch.be/?p=1014
+https://raspberrytips.nl/neopixel-ws2811-raspberry-pi/
+
+Code en SQL :
+http://sql.sh/
+
+%%%%%%%%%%%%%%%%%%%%
+SERVO MOTOR :
+
+Tuto Servo moteur avec Rpi.GPIO : http://espace-raspberry-francais.fr/Composants/Controler-Servo-Moteur-Raspberry-Francais/
+
+Tuto servo moteur avec wiringpi : https://learn.adafruit.com/adafruits-raspberry-pi-lesson-8-using-a-servo-motor/software
+https://github.com/WiringPi/WiringPi-Python
+
+Explication servo : https://fr.wikipedia.org/wiki/Servomoteur
+%%%%%%%%%%%%%%%%%%%%
+HDD MOTOR (Switched reluctance motor / SRM/ moteur à réluctance variable)
+https://en.wikipedia.org/wiki/Switched_reluctance_motor
+http://sam.electroastro.pagesperso-orange.fr/dossiers/pasapas/moteurpas2.htm
+http://home.clear.net.nz/pages/joecolquitt/0hdd.html
+%%%%%%%%%%%%%%%%%%%%
+
+Solution avec Diskpart (ne marche pas à 100%)
+
+faites
+
+executez (raccourci windowss + r) puis entrée
+
+tapez cmd (ouvre une fenêtre dos) puis entrée
+
+tapez diskpart (ouvre utilitaire diskpart) puis entrée se présente comme ca "diskpart>"
+
+tapez list disk (vous fais la liste de vos disques dur et usb connectés) puis entrée, à vous par la capacité de reconnaître le disque
+
+tapez select disk=   (exemple si votre clé usb est disque 2, tapez select disk=2) puis entrée (cela consiste à sélectionner le disque dur ou disque usb)
+
+tapez clean puis entrée (casse toutes les partitions) attention ceci ne marche pas sur les clés protégés cryptées, il faut des moyens plus lourds, des fois generes des messges d'erreurs mais ca marche quand même
+
+tapez convert mbr  (reconstruit la zone d'amorçage de la clé) puis entrée
+
+tapez create partition primary (crait la une partition primaire et toute la clé est allouée) puis entrée
+
+tapez exit puis entrée pour quitter
+%%%%%%%%%%%%%%%%%%%%%%%%%
+Archive Dézip :
+tar -xvf toto.tar.xz
